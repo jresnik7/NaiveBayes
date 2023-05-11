@@ -1,18 +1,19 @@
-#import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
+import nltk
 from nltk import *
 from nltk.corpus import stopwords
 import glob
-import codecs
 from collections import defaultdict, Counter
 import math
 import os
-import time
-import operator
+import csv
 
+nltk.download('stopwords')
 
 # Global class labels.
 POS_LABEL = 'pos'
 NEG_LABEL = 'neg'
+
 
 def main():
     print("Hello, this may take a little bit...")
@@ -36,22 +37,27 @@ def main():
     nb.train_model()
     print("Finished Training. Evaluating...")
     print("Final accuracy: " + str(nb.evaluate_classifier_accuracy(10.0)) + "%")
+    print("Creating Graph and CSV output file...")
+    plot_likelihood_create_csv(nb, word_counts)
+    print("Complete!")
+
 
 def tokenize_doc_and_more(doc): 
-  """
-  Return some representation of a document.
-  Uses stopwords to remove most common words that do not contribute meaning
-  Uses a Regular Expression tokenizer to better tokenize the words.
-  """
-  stopset = set(stopwords.words('english'))
-  bow = defaultdict(float)
-  tokenizer = RegexpTokenizer('\s+', gaps=True)
-  tokens = tokenizer.tokenize(doc)
-  lowered_tokens = map(lambda t: t.lower(), tokens)
-  for token in lowered_tokens:
-    if(token not in stopset):
-      bow[token] += 1.0 
-  return bow
+    """
+    Return some representation of a document.
+    Uses stopwords to remove most common words that do not contribute meaning
+    Uses a Regular Expression tokenizer to better tokenize the words.
+    """
+    stopset = set(stopwords.words('english'))
+    bow = defaultdict(float)
+    tokenizer = RegexpTokenizer('\s+', gaps=True)
+    tokens = tokenizer.tokenize(doc)
+    lowered_tokens = map(lambda t: t.lower(), tokens)
+    for token in lowered_tokens:
+        if(token not in stopset):
+            bow[token] += 1.0
+    return bow
+
 
 def tokenize_doc(doc):
     """
@@ -72,7 +78,7 @@ def n_word_types(word_counts):
     return a count of all word types in the corpus
     using information from word_counts
     """
-    return len(word_counts);
+    return len(word_counts)
 
 
 def n_word_tokens(word_counts):
@@ -80,8 +86,28 @@ def n_word_tokens(word_counts):
     return a count of all word tokens in the corpus
     using information from word_counts
     """
-    return sum(word_counts.values());
+    return sum(word_counts.values())
 
+
+def plot_likelihood_create_csv(nb, word_counts):
+    x = []  # x-axis
+    y = []  # y-axis
+    header = ["Word", "Occurrences", "Likelihood Ratio"]
+    with open('vocab_statistics.csv', 'w', newline='', encoding='utf8') as file:
+        writer = csv.writer(file)
+        writer.writerow(header)
+        for word in word_counts:
+            likelihood = nb.likelihood_ratio(word, word_counts[word])
+            count = word_counts[word]
+            x.append(count)
+            y.append(likelihood)
+            writer.writerow([str(word), count, likelihood])
+    file.close()
+    plt.scatter(x, y, s=10.0, color='b', marker='.')
+    plt.xlabel("Occurrences")
+    plt.ylabel("Likelihood Ratio")
+    plt.title("Occurrences and Likelihood Ratios of Vocabulary")
+    plt.savefig("Likelihood_ratio_graph_large_dataset.png")
 
 
 class NaiveBayes:
@@ -95,7 +121,7 @@ class NaiveBayes:
         self.train_dir = os.path.join(path_to_data, "train")
         self.test_dir = os.path.join(path_to_data, "test")
         # class_total_doc_counts is a dictionary that maps a class (i.e., pos/neg) to
-        # the number of documents in the trainning set of that class
+        # the number of documents in the training set of that class
         self.class_total_doc_counts = { POS_LABEL: 0.0,
                                         NEG_LABEL: 0.0 }
 
@@ -133,12 +159,12 @@ class NaiveBayes:
         Report a number of statistics after training.
         """
 
-        print ("REPORTING CORPUS STATISTICS")
-        print ("NUMBER OF DOCUMENTS IN POSITIVE CLASS:", self.class_total_doc_counts[POS_LABEL])
-        print ("NUMBER OF DOCUMENTS IN NEGATIVE CLASS:", self.class_total_doc_counts[NEG_LABEL])
-        print ("NUMBER OF TOKENS IN POSITIVE CLASS:", self.class_total_word_counts[POS_LABEL])
-        print ("NUMBER OF TOKENS IN NEGATIVE CLASS:", self.class_total_word_counts[NEG_LABEL])
-        print ("VOCABULARY SIZE: NUMBER OF UNIQUE WORDTYPES IN TRAINING CORPUS:", len(self.vocab))
+        print("REPORTING CORPUS STATISTICS")
+        print("NUMBER OF DOCUMENTS IN POSITIVE CLASS:", self.class_total_doc_counts[POS_LABEL])
+        print("NUMBER OF DOCUMENTS IN NEGATIVE CLASS:", self.class_total_doc_counts[NEG_LABEL])
+        print("NUMBER OF TOKENS IN POSITIVE CLASS:", self.class_total_word_counts[POS_LABEL])
+        print("NUMBER OF TOKENS IN NEGATIVE CLASS:", self.class_total_word_counts[NEG_LABEL])
+        print("VOCABULARY SIZE: NUMBER OF UNIQUE WORDTYPES IN TRAINING CORPUS:", len(self.vocab))
 
     def update_model(self, bow, label):
         """
@@ -159,8 +185,6 @@ class NaiveBayes:
             self.vocab.add(word)
 
         self.class_total_doc_counts[label] += 1
-        
-
 
     def tokenize_and_update_model(self, doc, label):
         """
@@ -172,15 +196,11 @@ class NaiveBayes:
         """
         self.update_model(self.tokenize_doc(doc), label)
 
-
-
     def top_n(self, label, n):
         """
         Returns the most frequent n tokens for documents with class 'label'.
         """
         return sorted(self.class_word_counts[label].items(), key=lambda x : x[1], reverse=True)[:n]
-
-
 
     def p_word_given_label(self, word, label):
         """
@@ -249,15 +269,15 @@ class NaiveBayes:
         """
         returns the largest likelihood ratio for the words in the vocabulary
         """
-        maxRet = 0
-        maxWord = ""
+        max_ret = 0
+        max_word = ""
         for word in self.vocab:
             val = self.likelihood_ratio(word, alpha)
-            if(maxRet < val):
-                maxWord = word
-                maxRet = val
+            if(max_ret < val):
+                max_word = word
+                max_ret = val
 
-        return maxWord + " " + str(maxRet)
+        return max_word + " " + str(max_ret)
 
     def evaluate_classifier_accuracy(self, alpha):
         """
