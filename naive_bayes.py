@@ -17,7 +17,7 @@ NEG_LABEL = 'neg'
 
 def main():
     print("Hello, this may take a little bit...")
-    PATH_TO_DATA = 'large_movie_review_dataset'  # set this variable to point to the location of the IMDB corpus on your computer
+    PATH_TO_DATA = 'txt_sentoken'  # set this variable to point to the location of the IMDB corpus on your computer
     POS_LABEL = 'pos'
     NEG_LABEL = 'neg'
     TRAIN_DIR = os.path.join(PATH_TO_DATA, "train")
@@ -93,7 +93,7 @@ def plot_likelihood_create_csv(nb, word_counts):
     x = []  # x-axis
     y = []  # y-axis
     header = ["Word", "Occurrences", "Likelihood Ratio"]
-    with open('vocab_statistics.csv', 'w', newline='', encoding='utf8') as file:
+    with open('vocab_statistics_small.csv', 'w', newline='', encoding='utf8') as file:
         writer = csv.writer(file)
         writer.writerow(header)
         for word in word_counts:
@@ -107,7 +107,7 @@ def plot_likelihood_create_csv(nb, word_counts):
     plt.xlabel("Occurrences")
     plt.ylabel("Likelihood Ratio")
     plt.title("Occurrences and Likelihood Ratios of Vocabulary")
-    plt.savefig("Likelihood_ratio_graph_large_dataset.png")
+    plt.savefig("Likelihood_ratio_graph_small_dataset.png")
 
 
 class NaiveBayes:
