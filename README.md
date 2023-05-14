@@ -14,4 +14,4 @@ This projects expects Python 3.9 or higher. I have not extensively tested differ
 There are some unused methods in the Naive Bayes class, which can be used to get some interesting statistics. For example, there is a method to retrieve the top n words with the highest likelihood ratio. I suggest that if you do not understand the math behind the Naive Bayes algorithm that it is worth understanding before proceeding, as much of the program will likely be confusing without this understanding. The code will produce 2 outputs. A .csv file which contains all words in the vocabulary, along with the number of occurrences of each word as well as the likelihood ratio of that word, and the graph of occurrences and likelihood ratio for all words in the vocabulary. The accuracy of the classifier for the larger dataset is 85.132%, while for the smaller dataset it is 77.2%.
 
 # Further Comments
-This source code is licensed under the MIT license, and the produced datasets are licensed under the CC BY license.
+This source code is licensed under the MIT license, and the produced datasets are licensed under the Creative Commons Attribution 4.0 International Public License.
