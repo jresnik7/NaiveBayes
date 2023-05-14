@@ -15,3 +15,6 @@ There are some unused methods in the Naive Bayes class, which can be used to get
 
 # Further Comments
 This source code is licensed under the MIT license, and the produced datasets are licensed under the Creative Commons Attribution 4.0 International Public License.
+
+[![DOI](https://zenodo.org/badge/297509402.svg)](https://zenodo.org/badge/latestdoi/297509402)
+
