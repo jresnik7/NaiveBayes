@@ -6,6 +6,7 @@ import glob
 from collections import defaultdict, Counter
 import math
 import os
+from datetime import datetime
 import csv
 
 nltk.download('stopwords')
@@ -17,7 +18,7 @@ NEG_LABEL = 'neg'
 
 def main():
     print("Hello, this may take a little bit...")
-    PATH_TO_DATA = 'txt_sentoken'  # set this variable to point to the location of the IMDB corpus on your computer
+    PATH_TO_DATA = 'large_movie_review_dataset'  # set this variable to point to the location of the IMDB corpus
     POS_LABEL = 'pos'
     NEG_LABEL = 'neg'
     TRAIN_DIR = os.path.join(PATH_TO_DATA, "train")
@@ -93,7 +94,9 @@ def plot_likelihood_create_csv(nb, word_counts):
     x = []  # x-axis
     y = []  # y-axis
     header = ["Word", "Occurrences", "Likelihood Ratio"]
-    with open('vocab_statistics_small.csv', 'w', newline='', encoding='utf8') as file:
+    date_time = datetime.now().strftime("%Y%m%d-%H%M%S")
+    filename = 'vocab_statistics_large_' + date_time + '.csv'
+    with open(filename, 'w', newline='', encoding='utf8') as file:
         writer = csv.writer(file)
         writer.writerow(header)
         for word in word_counts:
@@ -107,7 +110,7 @@ def plot_likelihood_create_csv(nb, word_counts):
     plt.xlabel("Occurrences")
     plt.ylabel("Likelihood Ratio")
     plt.title("Occurrences and Likelihood Ratios of Vocabulary")
-    plt.savefig("Likelihood_ratio_graph_small_dataset.png")
+    plt.savefig("Likelihood_ratio_graph_large_" + date_time + ".png")
 
 
 class NaiveBayes:
@@ -190,9 +193,9 @@ class NaiveBayes:
         """
         Tokenizes a document doc and updates internal count statistics.
         doc - a string representing a document.
-        label - the sentiment of the document (either postive or negative)
+        label - the sentiment of the document (either positive or negative)
         
-        Make sure when tokenizing to lower case all of the tokens!
+        Make sure when tokenizing to lower case all tokens!
         """
         self.update_model(self.tokenize_doc(doc), label)
 
