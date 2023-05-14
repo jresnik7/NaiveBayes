@@ -1,4 +1,4 @@
-# NaiveBayes
+# Naive Bayes Sentiment Analysis
 Naive Bayes text classification
 
 # Summary
